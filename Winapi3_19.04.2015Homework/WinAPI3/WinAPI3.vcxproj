@@ -11,17 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{63E0A618-B2BD-497B-ABCA-CF005DD44992}</ProjectGuid>
+    <ProjectGuid>{582E4F11-700F-4BB1-BC4A-B3C80499DAC8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>WinAPI2</RootNamespace>
-    <ProjectName>WinAPI2_19.04.2015Homework</ProjectName>
+    <RootNamespace>WinAPI3</RootNamespace>
+    <ProjectName>WinAPI3_19.04.2015Homework</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -77,11 +77,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\WinApi19.04.2015Homework\main.cpp" />
-    <ClCompile Include="..\..\WinApi19.04.2015Homework\Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\WinApi19.04.2015Homework\Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
