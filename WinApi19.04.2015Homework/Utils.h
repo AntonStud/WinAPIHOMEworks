@@ -1,7 +1,6 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
-
 #include<Windows.h>
 #include<stdlib.h>
 #include<string>
@@ -9,7 +8,7 @@
 #include<tchar.h>
 #include<iostream>
 #include<iomanip>
-#include<sstream>
+
 
 using namespace std;
 
@@ -37,13 +36,16 @@ enum CTRLSNMS {
 };
 
 enum IDENT {
-	IDENT_BTN_ADD = 1000, 	LIST_BOX_DIG, LIST_BOX_HUN,
-	
+	IDENT_BTN_ADD = 1000, IDENT_STRONG, IDENT_BRAVE, IDENT_KIND, IDENT_CLEVER
+};
+
+enum QUAL{
+	STRONG, BRAVE, KIND, CLEVER, ADD, TERMINATE
 };
 
 int FindCenterDesktopH(void);
 int FindCenterDesktopV(void);
 
-void FillListbox(const HWND &listbox, const int &start, const int &iter, vector<int> &arr);
-void ChangeList(const HWND &listbox, vector<int> &arr);
+void CheckStates(string &result);
+
 

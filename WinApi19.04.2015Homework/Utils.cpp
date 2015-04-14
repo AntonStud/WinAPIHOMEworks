@@ -10,36 +10,40 @@ char *controlNames[] = {
 	{ "LISTBOX" }
 };
 
-HWND listboxDigits, lisboxHundreds, buttonAdd;
+vector<HWND> ctrls(TERMINATE);
 
-vector<int> digits, hundreds;
+vector<string> qualities = { "Сильный", "Смелый", "Добрый", "Умный", "Добавить" };
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
 
-	static int flag = -1;
+	string result;
 
 	switch (message){
 
 	case WM_CREATE: 
-		
-		listboxDigits = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
-			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
-			LIST_X, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)LIST_BOX_DIG, hinst, NULL);
 
-		FillListbox(listboxDigits, ONE, 5, digits);
-
-		lisboxHundreds = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
-			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
-			LIST_H_SIZE + LIST_X*2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)LIST_BOX_HUN, hinst, NULL);
-
-		FillListbox(lisboxHundreds, TWOHUNDRED, 6, hundreds);
-
-		buttonAdd = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "Добавить",
+		ctrls[ADD] = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], qualities[ADD].c_str(),
 			WS_CHILD | WS_VISIBLE, 
 			LIST_H_SIZE*2 + LIST_X * 3, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_BTN_ADD, hinst, NULL);
+
+		ctrls[STRONG]= CreateWindowEx(NULL, controlNames[BUTTON], qualities[STRONG].c_str(),
+			WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_AUTOCHECKBOX,
+			LIST_X, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_STRONG, hinst, NULL);
+
+		ctrls[BRAVE] = CreateWindowEx(NULL, controlNames[BUTTON], qualities[BRAVE].c_str(),
+			WS_CHILD | WS_VISIBLE | /*BS_CHECKBOX |*/ BS_AUTOCHECKBOX,
+			LIST_X * 2 + BTN_H_SIZE, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_BRAVE, hinst, NULL);
+
+		ctrls[KIND] = CreateWindowEx(NULL, controlNames[BUTTON], qualities[KIND].c_str(),
+			WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_AUTOCHECKBOX,
+			LIST_X, LIST_Y * 2 + BTN_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_KIND, hinst, NULL);
+
+		ctrls[CLEVER] = CreateWindowEx(NULL, controlNames[BUTTON], qualities[CLEVER].c_str(),
+			WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_AUTOCHECKBOX,
+			LIST_X * 2 + BTN_H_SIZE, LIST_Y * 2 + BTN_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_CLEVER, hinst, NULL);
 
 		break;
 
@@ -50,43 +54,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDENT_BTN_ADD:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
-				switch (flag){
-				case LIST_BOX_DIG:
 
-					ChangeList(listboxDigits, digits);
+				result = "";
 
-					break;
-				case LIST_BOX_HUN:
-
-					ChangeList(lisboxHundreds, hundreds);
-
-					break;
-
-				}// switch (flag)
-
-				flag = -1;
+				CheckStates(result);
+			
+				MessageBox(hWnd, result.c_str(), result.c_str(), NULL);
+				
 			}// if (HIWORD(wParam) == BN_CLICKED)
 
 			break;
-
-		case LIST_BOX_DIG:
-
-			if (HIWORD(wParam) == LBN_SETFOCUS)
-			{
-				flag = LIST_BOX_DIG;
-
-			}// if (HIWORD(wParam) == LBN_DBLCLK)
-
-			break;
-
-		case LIST_BOX_HUN:
-			if (HIWORD(wParam) == LBN_SETFOCUS)
-			{
-				flag = LIST_BOX_HUN;
-
-			}// if (HIWORD(wParam) == BN_CLICKED)
-
-			break; 
 
 		}//switch (LOWORD(wParam)){
 
@@ -120,41 +97,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 }// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
-void ChangeList(const HWND &listbox, vector<int> &arr)
+void CheckStates(string &result)
 {
-	string temp;
-
-	int tmp;
-
-	tmp = arr.back();
-
-	arr.push_back(++tmp);
-
-	temp = to_string(tmp);
-
-	SendMessage(listbox, LB_INSERTSTRING, -1, (LPARAM)temp.c_str());
-
-	SendMessage(listbox, LB_SETSEL, FALSE, -1);
-
-}// void ChangeList(const HWND &listbox, vector<int> &arr)
-
-void FillListbox(const HWND &listbox, const int &start, const int &iter, vector<int> &arr)
-{
-	string temp;
-
-	int tmp = start;
-
-	for (int i = 0; i < iter; i++)
+	LRESULT tmp;
+	
+	for (int i = STRONG; i != ADD; i++)
 	{
-		arr.push_back(tmp);
+		tmp = SendMessage(ctrls[i], BM_GETCHECK, NULL, NULL);
+		
+		if (tmp == BST_CHECKED)
+		{
+			result += qualities[i];
 
-		temp = to_string(tmp++);
+			result += " ";
 
-		SendMessage(listbox, LB_INSERTSTRING, -1, (LPARAM)temp.c_str());
+		}//if (tmp == BST_CHECKED)
+			
+	}// for (int i = STRONG; i != ADD; i++)
 
-	}// for (int i = 0; i < iter; i++)
-
-}// void FillListbox(const HWND listbox, const int &start, const int &iter, vector<int> &arr)
+}// void CheckStates(string &result)
 
 int FindCenterDesktopH(void)
 {
