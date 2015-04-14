@@ -14,7 +14,7 @@ using namespace std;
 
 static TCHAR WindowsClass[] = _T("win32app");
 
-static TCHAR Title[] = _T("WinAPI3");
+static TCHAR Title[] = _T("Worker 0.1");
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -25,7 +25,7 @@ enum INIT {
 	BTN_H_SIZE = 150, BTN_V_SIZE = 25, X_FIRSTBTN_POZ = 10, Y_FIRSTBTN_POZ = 10,
 	V_SHIFT = 5, H_SHIFT = 10, STOP_SIZE = 200, EDIT_BOX_V_SIZE = 30, EDIT_BOX_H_SIZE = 250,
 	EDIT_BOX_SINGLE_V_SIZE = 30, NAME_SIZE = 100, FEE_SIZE = 8,
-	LIST_X = 20, LIST_Y = 20, LIST_H_SIZE = 300, LIST_V_SIZE = 400,
+	LIST_X = 20, LIST_Y = 20, LIST_H_SIZE = 150, LIST_V_SIZE = 400,
 	ONE = 1, TWOHUNDRED = 200
 };
 
@@ -36,16 +36,16 @@ enum CTRLSNMS {
 };
 
 enum IDENT {
-	IDENT_BTN_SEARCH = 1000, IDENT_LISTBOX, IDENT_EDITBOX
+	IDENT_BTN_ADD = 1000, IDENT_STRONG, IDENT_BRAVE, IDENT_KIND, IDENT_CLEVER
 };
 
 enum QUAL{
-	BTNSEARCH, LIST, EDITBOX, TERMINATE
+	STRONG, BRAVE, KIND, CLEVER, ADD, TERMINATE
 };
 
 int FindCenterDesktopH(void);
 int FindCenterDesktopV(void);
 
-
+void CheckStates(string &result);
 
 

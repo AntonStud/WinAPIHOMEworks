@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{63E0A618-B2BD-497B-ABCA-CF005DD44992}</ProjectGuid>
+    <ProjectGuid>{2920AB2A-217B-4528-BFD7-C24A62A6649D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>WinAPI2</RootNamespace>
-    <ProjectName>WinAPI2_19.04.2015Homework</ProjectName>
+    <RootNamespace>WinAPIHomework</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -77,11 +76,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\WinApi19.04.2015Homework\main.cpp" />
-    <ClCompile Include="..\..\WinApi19.04.2015Homework\Utils.cpp" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\WinApi19.04.2015Homework\Utils.h" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

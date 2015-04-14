@@ -12,8 +12,6 @@ char *controlNames[] = {
 
 vector<HWND> ctrls(TERMINATE);
 
-vector<string> qualities = { "Сильный", "Смелый", "Добрый", "Умный", "Добавить" };
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
@@ -25,25 +23,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CREATE: 
 
-		ctrls[ADD] = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], qualities[ADD].c_str(),
-			WS_CHILD | WS_VISIBLE, 
-			LIST_H_SIZE*2 + LIST_X * 3, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_BTN_ADD, hinst, NULL);
+		
+		ctrls[LIST] = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
+			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
+			LIST_X, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)IDENT_LISTBOX, hinst, NULL);
 
-		ctrls[STRONG]= CreateWindowEx(NULL, controlNames[BUTTON], qualities[STRONG].c_str(),
-			WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_AUTOCHECKBOX,
-			LIST_X, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_STRONG, hinst, NULL);
+		ctrls[EDITBOX] = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[EDIT], "",
+			WS_CHILD | WS_VISIBLE ,
+			LIST_X * 2 + LIST_H_SIZE, LIST_Y, EDIT_BOX_H_SIZE, EDIT_BOX_V_SIZE, hWnd, (HMENU)IDENT_EDITBOX, hinst, NULL);
 
-		ctrls[BRAVE] = CreateWindowEx(NULL, controlNames[BUTTON], qualities[BRAVE].c_str(),
-			WS_CHILD | WS_VISIBLE | /*BS_CHECKBOX |*/ BS_AUTOCHECKBOX,
-			LIST_X * 2 + BTN_H_SIZE, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_BRAVE, hinst, NULL);
-
-		ctrls[KIND] = CreateWindowEx(NULL, controlNames[BUTTON], qualities[KIND].c_str(),
-			WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_AUTOCHECKBOX,
-			LIST_X, LIST_Y * 2 + BTN_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_KIND, hinst, NULL);
-
-		ctrls[CLEVER] = CreateWindowEx(NULL, controlNames[BUTTON], qualities[CLEVER].c_str(),
-			WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_AUTOCHECKBOX,
-			LIST_X * 2 + BTN_H_SIZE, LIST_Y * 2 + BTN_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_CLEVER, hinst, NULL);
+		ctrls[BTNSEARCH] = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "Найти",
+			WS_CHILD | WS_VISIBLE,
+			LIST_X * 2 + LIST_H_SIZE, LIST_Y * 2 + EDIT_BOX_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, 
+			hWnd, (HMENU)IDENT_BTN_SEARCH, hinst, NULL);
 
 		break;
 
@@ -51,15 +43,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (LOWORD(wParam)){
 			
-		case IDENT_BTN_ADD:
+		case IDENT_BTN_SEARCH:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
 
-				result = "";
-
-				CheckStates(result);
-			
-				MessageBox(hWnd, result.c_str(), result.c_str(), NULL);
+				
 				
 			}// if (HIWORD(wParam) == BN_CLICKED)
 
@@ -97,25 +85,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 }// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
-void CheckStates(string &result)
-{
-	LRESULT tmp;
-	
-	for (int i = STRONG; i != ADD; i++)
-	{
-		tmp = SendMessage(ctrls[i], BM_GETCHECK, NULL, NULL);
-		
-		if (tmp == BST_CHECKED)
-		{
-			result += qualities[i];
-
-			result += " ";
-
-		}//if (tmp == BST_CHECKED)
-			
-	}// for (int i = STRONG; i != ADD; i++)
-
-}// void CheckStates(string &result)
 
 int FindCenterDesktopH(void)
 {

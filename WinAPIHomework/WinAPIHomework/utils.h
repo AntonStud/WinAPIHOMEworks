@@ -1,6 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
+
 #include<Windows.h>
 #include<stdlib.h>
 #include<string>
@@ -8,13 +9,13 @@
 #include<tchar.h>
 #include<iostream>
 #include<iomanip>
-
+#include<sstream>
 
 using namespace std;
 
 static TCHAR WindowsClass[] = _T("win32app");
 
-static TCHAR Title[] = _T("WinAPI3");
+static TCHAR Title[] = _T("WinAPI1");
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -25,7 +26,7 @@ enum INIT {
 	BTN_H_SIZE = 150, BTN_V_SIZE = 25, X_FIRSTBTN_POZ = 10, Y_FIRSTBTN_POZ = 10,
 	V_SHIFT = 5, H_SHIFT = 10, STOP_SIZE = 200, EDIT_BOX_V_SIZE = 30, EDIT_BOX_H_SIZE = 250,
 	EDIT_BOX_SINGLE_V_SIZE = 30, NAME_SIZE = 100, FEE_SIZE = 8,
-	LIST_X = 20, LIST_Y = 20, LIST_H_SIZE = 300, LIST_V_SIZE = 400,
+	LIST_X = 20, LIST_Y = 20, LIST_H_SIZE = 150, LIST_V_SIZE = 400,
 	ONE = 1, TWOHUNDRED = 200
 };
 
@@ -36,16 +37,13 @@ enum CTRLSNMS {
 };
 
 enum IDENT {
-	IDENT_BTN_SEARCH = 1000, IDENT_LISTBOX, IDENT_EDITBOX
-};
-
-enum QUAL{
-	BTNSEARCH, LIST, EDITBOX, TERMINATE
+	IDENT_BTN_ADD = 1000, 	LIST_BOX_DIG, LIST_BOX_HUN,
+	
 };
 
 int FindCenterDesktopH(void);
 int FindCenterDesktopV(void);
 
-
-
+void FillListbox(const HWND &listbox, const int &start, const int &iter, vector<int> &arr);
+void ChangeList(const HWND &listbox, vector<int> &arr);
 
