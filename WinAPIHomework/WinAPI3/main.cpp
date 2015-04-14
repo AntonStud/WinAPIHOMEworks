@@ -4,8 +4,15 @@
 
 HINSTANCE hinst;
 
+
+
+
+
 int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,int nCmdShow)
 {
+	
+	
+	
 	WNDCLASSEX wcex;
 
 	memset(&wcex, 0, sizeof(wcex));
@@ -63,6 +70,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ShowWindow(hWnd, nCmdShow);
 	//UpdateWindow(hWnd);
 
+	
+
 	MSG msg;
 
 	BOOL bRet;
@@ -83,6 +92,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return(int)msg.wParam;
 
 }// int WINAPI WinMain
+
+
 
 
 

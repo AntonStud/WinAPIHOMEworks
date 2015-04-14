@@ -14,7 +14,7 @@ using namespace std;
 
 static TCHAR WindowsClass[] = _T("win32app");
 
-static TCHAR Title[] = _T("Worker 0.1");
+static TCHAR Title[] = _T("WinApi2");
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 

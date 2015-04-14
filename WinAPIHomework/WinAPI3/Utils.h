@@ -8,9 +8,13 @@
 #include<tchar.h>
 #include<iostream>
 #include<iomanip>
+#include<fstream>
+#include<algorithm> 
 
 
 using namespace std;
+
+typedef unsigned int ui;
 
 static TCHAR WindowsClass[] = _T("win32app");
 
@@ -46,6 +50,11 @@ enum QUAL{
 int FindCenterDesktopH(void);
 int FindCenterDesktopV(void);
 
+string GetTextFromEdit(const HWND &hWndCtrl);
+
+
+void FindPositOfStringInListBox(const string &result, vector<int> &positArray, const vector<string> &strings, const HWND &hWnd);
+void FillStrings(vector <string> &strings, const HWND &hWnd, const HWND &list);
 
 
 
