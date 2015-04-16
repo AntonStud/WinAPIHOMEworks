@@ -8,6 +8,7 @@
 var button = document.getElementById("AddButton");
 
 var checkArr = document.getElementsByClassName("checkbox");
+//var labelArr =  document.getElementsByTagName("label");
 
 var CheckStates = function(){
 
@@ -18,7 +19,7 @@ var CheckStates = function(){
         if(checkArr[i].checked) {
 
             tmp += quolities[i] + " ";
-
+            //tmp += labelArr[i].innerHTML + " ";
         }//  if(checkArr[i].checked) {
 
     }// for(var i = 0; i < checkArr.length; i++)
