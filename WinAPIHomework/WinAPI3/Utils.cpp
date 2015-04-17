@@ -38,9 +38,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
 			LIST_X * 2 + LIST_H_SIZE, LIST_Y, EDIT_BOX_H_SIZE, EDIT_BOX_V_SIZE, hWnd, (HMENU)IDENT_EDITBOX, hinst, NULL);
 
-		Edit_SetCueBannerText(ctrls[EDITBOX], "¬ведите строку дл€ поиска");
-		Edit_SetCueBannerTextFocused(ctrls[EDITBOX], "¬ведите строку дл€ поиска",TRUE);
+		//Edit_SetCueBannerText(ctrls[EDITBOX], "¬ведите строку дл€ поиска");
+		//Edit_SetCueBannerTextFocused(ctrls[EDITBOX], "¬ведите строку дл€ поиска",TRUE);
 
+		SendMessage(ctrls[EDITBOX], EM_SETCUEBANNER, TRUE, (LPARAM)L"¬ведите строку дл€ поиска...");
+			
 		ctrls[BTNSEARCH] = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "Search",
 			WS_CHILD | WS_VISIBLE,
 			LIST_X * 2 + LIST_H_SIZE, LIST_Y * 2 + EDIT_BOX_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, 
