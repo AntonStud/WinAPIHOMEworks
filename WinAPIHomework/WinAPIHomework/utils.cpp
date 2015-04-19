@@ -7,23 +7,17 @@ extern HINSTANCE hinst;
 char *controlNames[] = {
 	{ "BUTTON" },
 	{ "EDIT" },
-	{ "LISTBOX" },
-	{ "COMBOBOX" }
+	{ "LISTBOX" }
 };
 
-HWND comboboxArms, comboboxDirection, buttonHit, listboxInfo;
+HWND listboxDigits, lisboxHundreds, buttonAdd;
 
-
-vector<string> arms = {"Fist" , "Leg"};
-vector<string> direction = { "Head", "Body", "Legs" };
-vector<string> history;
+vector<int> digits, hundreds;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
-
-	string result = "";
 
 	static int flag = -1;
 
@@ -31,37 +25,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CREATE:
 
-		comboboxArms = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN,
-			LIST_X, LIST_Y, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_ARM, hinst, NULL);
-
-		for (ui i = 0; i < arms.size(); i++)
-		{
-			SendMessage(comboboxArms, CB_ADDSTRING, NULL, (LPARAM)arms[i].c_str());
-
-			//SetWindowText(hWnd, arms[i].c_str());
-		}// for (ui i = 0; i < arms.size(); i++)
-
-
-		comboboxDirection = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-			LIST_X, LIST_Y + LIST_Y * 2, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_DIRECT, hinst, NULL);
-
-		for (ui i = 0; i < direction.size(); i++)
-		{
-			SendMessage(comboboxDirection, CB_ADDSTRING, NULL, (LPARAM)direction[i].c_str());
-
-			//SetWindowText(hWnd, arms[i].c_str());
-		}// for (ui i = 0; i < arms.size(); i++)
-
-
-		listboxInfo = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
+		listboxDigits = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
 			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
-			BTN_H_SIZE + LIST_X * 2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_LIST_BOX_INFO, hinst, NULL);
+			LIST_X, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)LIST_BOX_DIG, hinst, NULL);
 
-		buttonHit = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "HIT",
+		FillListbox(listboxDigits, ONE, 5, digits);
+
+		lisboxHundreds = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
+			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
+			LIST_H_SIZE + LIST_X * 2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)LIST_BOX_HUN, hinst, NULL);
+
+		FillListbox(lisboxHundreds, TWOHUNDRED, 6, hundreds);
+
+		buttonAdd = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "Добавить",
 			WS_CHILD | WS_VISIBLE,
-			LIST_X, LIST_Y * 2 + LIST_Y * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL);
+			LIST_H_SIZE * 2 + LIST_X * 3, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)IDENT_BTN_ADD, hinst, NULL);
 
 		break;
 
@@ -69,18 +47,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (LOWORD(wParam)){
 
-		case ID_BTN_HIT:
+		case IDENT_BTN_ADD:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
-				result = GetInfo(comboboxArms, comboboxDirection);
-				SendInfo(listboxInfo, result);
-				break;
+				switch (flag){
+				case LIST_BOX_DIG:
 
-			}//switch (LOWORD(wParam)){
+					ChangeList(listboxDigits, digits);
 
-		}// case WM_COMMAND:
+					break;
+				case LIST_BOX_HUN:
 
-		break;
+					ChangeList(lisboxHundreds, hundreds);
+
+					break;
+
+				}// switch (flag)
+
+				flag = -1;
+			}// if (HIWORD(wParam) == BN_CLICKED)
+
+			break;
+
+		case LIST_BOX_DIG:
+
+			if (HIWORD(wParam) == LBN_SETFOCUS)
+			{
+				flag = LIST_BOX_DIG;
+
+			}// if (HIWORD(wParam) == LBN_DBLCLK)
+
+			break;
+
+		case LIST_BOX_HUN:
+			if (HIWORD(wParam) == LBN_SETFOCUS)
+			{
+				flag = LIST_BOX_HUN;
+
+			}// if (HIWORD(wParam) == BN_CLICKED)
+
+			break;
+
+		}//switch (LOWORD(wParam)){
+
+	}// case WM_COMMAND:
+
+	break;
 
 	case WM_PAINT:
 
@@ -106,9 +118,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 
-	}// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+}// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
-}
+void ChangeList(const HWND &listbox, vector<int> &arr)
+{
+	string temp;
+
+	int tmp;
+
+	tmp = arr.back();
+
+	arr.push_back(++tmp);
+
+	temp = to_string(tmp);
+
+	SendMessage(listbox, LB_INSERTSTRING, -1, (LPARAM)temp.c_str());
+
+	SendMessage(listbox, LB_SETSEL, FALSE, -1);
+
+}// void ChangeList(const HWND &listbox, vector<int> &arr)
+
+void FillListbox(const HWND &listbox, const int &start, const int &iter, vector<int> &arr)
+{
+	string temp;
+
+	int tmp = start;
+
+	for (int i = 0; i < iter; i++)
+	{
+		arr.push_back(tmp);
+
+		temp = to_string(tmp++);
+
+		SendMessage(listbox, LB_INSERTSTRING, -1, (LPARAM)temp.c_str());
+
+	}// for (int i = 0; i < iter; i++)
+
+}// void FillListbox(const HWND listbox, const int &start, const int &iter, vector<int> &arr)
 
 int FindCenterDesktopH(void)
 {
@@ -139,22 +185,4 @@ int FindCenterDesktopV(void)
 	return (rectDesktop.bottom - rectDesktop.top) / 2;
 }// int FindCenterDesktopV(void
 
-
-void SendInfo(const HWND &listboxInfo, const string &result)
-{
-
-	SendMessage(listboxInfo, LB_ADDSTRING, NULL, (LPARAM)result.c_str());
-
-}//void SendInfo(const HWND &listboxInfo)
-
-string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
-{
-	string result = "Hit: ";
-
-
-
-	result += " in ";
-
-	return result;
-}// string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
 

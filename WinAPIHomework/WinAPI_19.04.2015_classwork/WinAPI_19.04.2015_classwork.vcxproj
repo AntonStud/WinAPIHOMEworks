@@ -10,6 +10,13 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="utils.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{86A5C566-6221-4C5C-99A5-C0C687503ABB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -75,13 +82,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\WinAPIHomework\utils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\WinAPIHomework\main.cpp" />
-    <ClCompile Include="..\WinAPIHomework\utils.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

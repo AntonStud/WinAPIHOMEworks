@@ -4,7 +4,7 @@
 
 HINSTANCE hinst;
 
-int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,int nCmdShow)
 {
 	WNDCLASSEX wcex;
 
