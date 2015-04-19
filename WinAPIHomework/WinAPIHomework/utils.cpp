@@ -29,8 +29,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message){
 
-	case WM_CREATE: 
-		
+	case WM_CREATE:
+
 		comboboxArms = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
 			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN,
 			LIST_X, LIST_Y, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_ARM, hinst, NULL);
@@ -41,7 +41,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			//SetWindowText(hWnd, arms[i].c_str());
 		}// for (ui i = 0; i < arms.size(); i++)
-		
+
 
 		comboboxDirection = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
 			WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
@@ -60,27 +60,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			BTN_H_SIZE + LIST_X * 2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_LIST_BOX_INFO, hinst, NULL);
 
 		buttonHit = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "HIT",
-			WS_CHILD | WS_VISIBLE, 
-			LIST_X, LIST_Y*2 + LIST_Y * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL);
+			WS_CHILD | WS_VISIBLE,
+			LIST_X, LIST_Y * 2 + LIST_Y * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL);
 
 		break;
 
 	case WM_COMMAND:
 	{
 		switch (LOWORD(wParam)){
-			
+
 		case ID_BTN_HIT:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
 				result = GetInfo(comboboxArms, comboboxDirection);
 				SendInfo(listboxInfo, result);
-			break;
+				break;
 
-		}//switch (LOWORD(wParam)){
+			}//switch (LOWORD(wParam)){
 
-	}// case WM_COMMAND:
+		}// case WM_COMMAND:
 
-	break;
+		break;
 
 	case WM_PAINT:
 
@@ -89,7 +89,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 
 		break;
-	
+
 	case WM_DESTROY:
 
 		PostQuitMessage(0);
@@ -106,9 +106,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 
-}// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	}// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
-
+}
 
 int FindCenterDesktopH(void)
 {
@@ -143,7 +143,7 @@ int FindCenterDesktopV(void)
 void SendInfo(const HWND &listboxInfo, const string &result)
 {
 
-	SendMessage(listboxInfo, LB_ADDSTRING, NULL, result.c_str());
+	SendMessage(listboxInfo, LB_ADDSTRING, NULL, (LPARAM)result.c_str());
 
 }//void SendInfo(const HWND &listboxInfo)
 
