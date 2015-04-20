@@ -9,7 +9,8 @@
 #include<tchar.h>
 #include<iostream>
 #include<iomanip>
-#include<sstream>
+//#include<sstream>
+#include<fstream>
 #include<Windowsx.h>
 
 using namespace std;
@@ -40,7 +41,7 @@ enum CTRLSNMS {
 };
 
 enum IDENT {
-	ID_BTN_HIT = 1000, ID_LIST_BOX_INFO, ID_COMBO_ARM, ID_COMBO_DIRECT
+	ID_BTN_DOWN = 1000, ID_COMBO_LIST
 	
 };
 
@@ -48,5 +49,5 @@ int FindCenterDesktopH(void);
 int FindCenterDesktopV(void);
 
 
-void SendInfo(const HWND &listboxInfo, const string &result);
-string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection);
+void FillStrings(vector <string> &strings, const HWND &hWnd, const HWND &list);
+void  ShiftDown(const HWND &comboboxListStr, vector <string> &strings, const ui &curSelect);

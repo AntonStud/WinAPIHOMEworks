@@ -11,18 +11,19 @@ char *controlNames[] = {
 	{ "COMBOBOX" }
 };
 
-HWND comboboxArms, comboboxDirection, buttonHit, listboxInfo;
+HWND comboboxListStr, buttonDown;
 
+vector<string> strings;
 
-vector<string> arms = {"Fist" , "Leg"};
-vector<string> direction = { "Head", "Body", "Legs" };
-vector<string> history;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	//RECT rect;
 	HDC hdc;
+
+	//int curSel;
+	//int listSize;
 
 	string result = "";
 
@@ -32,42 +33,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CREATE:
 
-		comboboxArms = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN,
-			LIST_X, LIST_Y, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_ARM, hinst, NULL);
+		comboboxListStr = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
+			WS_CHILD | WS_VISIBLE | CBS_SIMPLE,
+			LIST_X, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_LIST, hinst, NULL);
 
-		for (ui i = 0; i < arms.size(); i++)
-		{
-			SendMessage(comboboxArms, CB_ADDSTRING, NULL, (LPARAM)arms[i].c_str());
+		FillStrings(strings, hWnd, comboboxListStr);
 
-			//SetWindowText(hWnd, arms[i].c_str());
-		}// for (ui i = 0; i < arms.size(); i++)
-
-		//SendMessage(comboboxArms, CB_SELECTSTRING, -1, (LPARAM)arms[0].c_str());
-
-		ComboBox_SetText(comboboxArms, "Choose arm");
-
-
-		comboboxDirection = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT,
-			LIST_X, LIST_Y + LIST_Y * 2, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_DIRECT, hinst, NULL);
-
-		for (ui i = 0; i < direction.size(); i++)
-		{
-			
-			SendMessage(comboboxDirection, CB_ADDSTRING, NULL, (LPARAM)direction[i].c_str());
-
-		}// for (ui i = 0; i < arms.size(); i++)
-
-		ComboBox_SetText(comboboxDirection, "Choose level");
-
-		listboxInfo = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
-			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
-			BTN_H_SIZE + LIST_X * 2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_LIST_BOX_INFO, hinst, NULL);
-
-		buttonHit = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "HIT",
+		buttonDown = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "DOWN",
 			WS_CHILD | WS_VISIBLE,
-			LIST_X, LIST_Y * 2 + LIST_Y * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL);
+			LIST_X * 2 + LIST_H_SIZE, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_DOWN, hinst, NULL);
 
 		break;
 
@@ -75,28 +49,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (LOWORD(wParam)){
 
-		case ID_BTN_HIT:
+		case ID_BTN_DOWN:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
-				try{
+				auto curSelect = SendMessage(comboboxListStr, CB_GETCURSEL, NULL, NULL);
+				auto listSize = SendMessage(comboboxListStr, CB_GETCOUNT, NULL, NULL);
 
-				result = GetInfo(comboboxArms, comboboxDirection);
+				if (curSelect != -1)
+				{
+				if (curSelect == listSize - 1){
 
-				}
-				catch (char* s){
+					MessageBox(hWnd, "This string is last", "End of list", NULL);
 
-				MessageBox(hWnd, s, s, NULL);
+					Button_Enable(buttonDown, FALSE);
 
-				break;
+				}else{
+
+					ShiftDown(comboboxListStr, strings, curSelect);
 				}
 				
-				SendInfo(listboxInfo, result);
-				
+				}
+
 				break;
 
-			}//switch (LOWORD(wParam)){
+			}//case ID_BTN_DOWN
 
-		}// case WM_COMMAND:
+		case ID_COMBO_LIST:
+			if (HIWORD(wParam) == CBN_SELCHANGE)
+			{
+				Button_Enable(buttonDown, TRUE);
+
+				break;
+
+			}//case ID_BTN_DOWN
+
+		}//switch (LOWORD(wParam)){
 
 		break;
 
@@ -126,7 +113,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	}// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
-}
+}// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int FindCenterDesktopH(void)
 {
@@ -158,39 +145,41 @@ int FindCenterDesktopV(void)
 }// int FindCenterDesktopV(void
 
 
-void SendInfo(const HWND &listboxInfo, const string &result)
+void FillStrings(vector <string> &strings, const HWND &hWnd, const HWND &list)
 {
+	fstream fileStrings;
+	string line;
 
-	SendMessage(listboxInfo, LB_ADDSTRING, NULL, (LPARAM)result.c_str());
+	fileStrings.open("Strings.txt", ios::in);
 
-}//void SendInfo(const HWND &listboxInfo)
+	if (!fileStrings.is_open())
+	{
+		MessageBox(hWnd, "File with strings is not found", "No file", NULL);
+		exit(1);
+	}// if (!fileStrings.is_open())
 
-string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
+	while (getline(fileStrings, line))
+	{
+		SendMessage(list, CB_ADDSTRING, NULL, (LPARAM)line.c_str());
+
+		strings.push_back(line);
+
+	}// while (getline(fileStrings, line))
+
+	//sort(strings.begin(), strings.end());
+
+	fileStrings.close();
+
+}// void FillStrings(vector <string> &strings)
+
+void  ShiftDown(const HWND &comboboxListStr, vector <string> &strings, const ui &curSelect)
 {
-	
-	string result = "Hit: ";
+	std::swap(strings[curSelect], strings[curSelect + 1]);
 
-	auto pos = ComboBox_GetCurSel(comboboxArms);
+	SendMessage(comboboxListStr, CB_DELETESTRING, curSelect, NULL);
+	SendMessage(comboboxListStr, CB_DELETESTRING, curSelect, NULL);
 
-	if (pos == CB_ERR)
-	{
-		throw "Choose arm";
-	}// if (pos == CB_ERR)
+	SendMessage(comboboxListStr, CB_INSERTSTRING, curSelect, (LPARAM)strings[curSelect].c_str());
+	SendMessage(comboboxListStr, CB_INSERTSTRING, curSelect + 1, (LPARAM)strings[curSelect+1].c_str());
 
-	result += arms[pos];
-
-	result += " in: ";
-
-	pos = ComboBox_GetCurSel(comboboxDirection);
-
-	if (pos == CB_ERR)
-	{
-		throw "Choose level";
-	}// if (pos == CB_ERR)
-
-
-	result += direction[pos];
-
-	return result;
-}// string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
-
+}// void  ShiftDown(const HWND &comboboxListStr, vector <string> &strings)
