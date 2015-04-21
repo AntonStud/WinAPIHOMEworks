@@ -8,15 +8,13 @@ char *controlNames[] = {
 	{ "BUTTON" },
 	{ "EDIT" },
 	{ "LISTBOX" },
-	{ "COMBOBOX" }
+	{ "COMBOBOX" },
+	{ "STATIC" }
 };
 
-HWND comboboxArms, comboboxDirection, buttonHit, listboxInfo;
+HWND comboboxSpecialty,staticLabel, buttonRecord, editSurname, listConcat;
 
-
-vector<string> arms = {"Fist" , "Leg"};
-vector<string> direction = { "Head", "Body", "Legs" };
-vector<string> history;
+vector <string> specialty;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -24,50 +22,67 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	//RECT rect;
 	HDC hdc;
 
+	HDC hdcControl;
+
 	string result = "";
 
-	static int flag = -1;
+	const int limitEdit = 100;
+
+	static HBRUSH hBrush = CreateSolidBrush(RGB(230, 230, 230));
+
+	DWORD CtrlID;
+
+	//static int flag = -1;
 
 	switch (message){
 
+	case WM_CTLCOLORSTATIC:
+	{
+		if (staticLabel == (HWND)lParam)
+
+			//OR if the handle is unavailable to you, get ctrl ID
+
+		CtrlID = GetDlgCtrlID((HWND)lParam); //Window Control ID
+		if (CtrlID == ID_STATIC_LBL) //If desired control
+			{
+				HDC hdcStatic = (HDC)wParam;
+				SetTextColor(hdcStatic, RGB(0, 0, 0));
+				SetBkColor(hdcStatic, RGB(230, 230, 230));
+				return (INT_PTR)hBrush;
+			}
+	}
+
+	
 	case WM_CREATE:
 
-		comboboxArms = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
+		staticLabel = CreateWindowEx(NULL, controlNames[STATIC], "Surname",
+			WS_CHILD | WS_VISIBLE | SS_SIMPLE,
+			LIST_X, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_STATIC_LBL, hinst, NULL);
+		
+
+
+		editSurname = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[EDIT], "",
+			WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
+			LIST_X, LIST_Y + BTN_V_SIZE, EDIT_BOX_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_EDIT_SURNAME, hinst, NULL);
+
+		Edit_LimitText(editSurname, limitEdit);
+
+		comboboxSpecialty = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
 			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN,
-			LIST_X, LIST_Y, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_ARM, hinst, NULL);
+			LIST_X, LIST_Y + BTN_V_SIZE + EDIT_BOX_V_SIZE, BTN_H_SIZE, COMBO_V_SIZE, hWnd, 
+			(HMENU)ID_COMBO_BOX_SPEC, hinst, NULL);
 
-		for (ui i = 0; i < arms.size(); i++)
-		{
-			SendMessage(comboboxArms, CB_ADDSTRING, NULL, (LPARAM)arms[i].c_str());
+		FillStrings(specialty, hWnd, comboboxSpecialty);
 
-			//SetWindowText(hWnd, arms[i].c_str());
-		}// for (ui i = 0; i < arms.size(); i++)
-
-		//SendMessage(comboboxArms, CB_SELECTSTRING, -1, (LPARAM)arms[0].c_str());
-
-		ComboBox_SetText(comboboxArms, "Choose arm");
-
-
-		comboboxDirection = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT,
-			LIST_X, LIST_Y + LIST_Y * 2, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_DIRECT, hinst, NULL);
-
-		for (ui i = 0; i < direction.size(); i++)
-		{
-			
-			SendMessage(comboboxDirection, CB_ADDSTRING, NULL, (LPARAM)direction[i].c_str());
-
-		}// for (ui i = 0; i < arms.size(); i++)
-
-		ComboBox_SetText(comboboxDirection, "Choose level");
-
-		listboxInfo = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
-			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
-			BTN_H_SIZE + LIST_X * 2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_LIST_BOX_INFO, hinst, NULL);
-
-		buttonHit = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "HIT",
+		buttonRecord = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "Record",
 			WS_CHILD | WS_VISIBLE,
-			LIST_X, LIST_Y * 2 + LIST_Y * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL);
+			LIST_X * 2 + BTN_H_SIZE, LIST_Y + BTN_V_SIZE + EDIT_BOX_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, hWnd, 
+			(HMENU)ID_BTN_REC, hinst, NULL);
+
+		listConcat = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
+			WS_CHILD | WS_VISIBLE,
+			LIST_X * 2 + EDIT_BOX_H_SIZE, LIST_Y + BTN_V_SIZE, LIST_H_SIZE, LIST_V_SIZE, hWnd,
+			(HMENU)ID_LIST_CONCAT, hinst, NULL);
 
 		break;
 
@@ -75,12 +90,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (LOWORD(wParam)){
 
-		case ID_BTN_HIT:
+		case ID_BTN_REC:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
 				try{
 
-				result = GetInfo(comboboxArms, comboboxDirection);
+					result = GetInfo(comboboxSpecialty, editSurname, hWnd);
 
 				}
 				catch (char* s){
@@ -90,7 +105,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				}
 				
-				SendInfo(listboxInfo, result);
+				SendInfo(listConcat, result);
 				
 				break;
 
@@ -158,38 +173,74 @@ int FindCenterDesktopV(void)
 }// int FindCenterDesktopV(void
 
 
-void SendInfo(const HWND &listboxInfo, const string &result)
+void FillStrings(vector <string> &strings, const HWND &hWnd, const HWND &combo)
+{
+	fstream fileStrings;
+	string line;
+
+	fileStrings.open("Specialty.txt", ios::in);
+
+	if (!fileStrings.is_open())
+	{
+		MessageBox(hWnd, "File with specialties is not found", "No file", NULL);
+		exit(1);
+	}// if (!fileStrings.is_open())
+
+	while (getline(fileStrings, line))
+	{
+		SendMessage(combo, CB_ADDSTRING, NULL, (LPARAM)line.c_str());
+
+		strings.push_back(line);
+
+	}// while (getline(fileStrings, line))
+
+	//sort(strings.begin(), strings.end());
+
+	fileStrings.close();
+
+}// void FillStrings(vector <string> &strings)
+
+
+void SendInfo(const HWND &listbox, const string &result)
 {
 
-	SendMessage(listboxInfo, LB_ADDSTRING, NULL, (LPARAM)result.c_str());
+	SendMessage(listbox, LB_ADDSTRING, NULL, (LPARAM)result.c_str());
 
 }//void SendInfo(const HWND &listboxInfo)
 
-string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
+string GetInfo(const HWND &combobox, const HWND &edit , const HWND &hWnd)
 {
-	
-	string result = "Hit: ";
+	char *buffer;
+	int buffSize;
+	string result;
 
-	auto pos = ComboBox_GetCurSel(comboboxArms);
+	buffSize = GetWindowTextLength(edit);
 
-	if (pos == CB_ERR)
-	{
-		throw "Choose arm";
+	buffer = new char[buffSize + 1];
+
+	GetWindowText(edit, (LPTSTR)buffer, buffSize + 1);
+
+	result = buffer;
+
+	if (result.length() == 0){
+
+		throw "Enter surname";
+
+	}// if (!result.length()){
+
+	result += " : ";
+
+	auto pos = ComboBox_GetCurSel(combobox);
+
+	if (pos == CB_ERR){
+
+		throw "Choose specialty";
+
 	}// if (pos == CB_ERR)
 
-	result += arms[pos];
+	result += specialty[pos];
 
-	result += " in: ";
-
-	pos = ComboBox_GetCurSel(comboboxDirection);
-
-	if (pos == CB_ERR)
-	{
-		throw "Choose level";
-	}// if (pos == CB_ERR)
-
-
-	result += direction[pos];
+	//delete[]buffer;
 
 	return result;
 }// string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)

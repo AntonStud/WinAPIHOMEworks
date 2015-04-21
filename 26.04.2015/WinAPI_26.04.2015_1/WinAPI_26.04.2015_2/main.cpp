@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wcex.hInstance = hinstance;
 	wcex.hIcon = LoadIcon(hinstance, MAKEINTRESOURCE(IDI_APPLICATION));
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 0);
 	/*wcex.hbrBackground = CreateSolidBrush(RGB(100, 70, 150));*/
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = WindowsClass;
