@@ -36,11 +36,13 @@ enum INIT {
 //void MoveExitWindow(const HWND& parentWindow, const HWND& replaceWindow);
 
 enum CTRLSNMS { 
-	BUTTON, EDIT, LISTBOX, COMBOBOX
+	BUTTON, EDIT, LISTBOX, COMBOBOX, STATIC
 };
 
 enum IDENT {
-	ID_BTN_HIT = 1000, ID_LIST_BOX_INFO, ID_COMBO_ARM, ID_COMBO_DIRECT
+	ID_BTN_HIT = 1000, ID_LIST_BOX_INFO, ID_COMBO_ARM, ID_COMBO_DIRECT, 
+	ID_BTN_START, ID_STATIC_ARM, ID_STATIC_DIRECT, ID_COMBO_BLOCK, ID_STATIC_BLOCK
+
 	
 };
 
@@ -50,3 +52,8 @@ int FindCenterDesktopV(void);
 
 void SendInfo(const HWND &listboxInfo, const string &result);
 string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection);
+
+
+int GetPlayerShield(const HWND &combobox);
+
+void EnableAll(vector<HWND> &wndws, const BOOL &enable);

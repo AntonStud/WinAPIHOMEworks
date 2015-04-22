@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils.h"
+#include "Game.h"
 
 extern HINSTANCE hinst;
 
@@ -8,15 +9,20 @@ char *controlNames[] = {
 	{ "BUTTON" },
 	{ "EDIT" },
 	{ "LISTBOX" },
-	{ "COMBOBOX" }
+	{ "COMBOBOX" },
+	{ "STATIC" }
+
 };
 
-HWND comboboxArms, comboboxDirection, buttonHit, listboxInfo;
+//HWND comboboxArms, comboboxDirection, buttonHit, listboxInfo;
 
+vector<HWND> wndws;
 
-vector<string> arms = {"Fist" , "Leg"};
-vector<string> direction = { "Head", "Body", "Legs" };
-vector<string> history;
+Game game;
+
+//vector<string> arms = {"Fist" , "Leg"};
+//vector<string> direction = { "Head", "Body", "Legs" };
+//vector<string> history;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -28,46 +34,82 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	static int flag = -1;
 
+	int hit, shield, direct, health;
+
 	switch (message){
 
 	case WM_CREATE:
 
-		comboboxArms = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
+		
+		wndws.push_back(CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
 			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN,
-			LIST_X, LIST_Y, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_ARM, hinst, NULL);
+			LIST_X, LIST_Y * 2 + BTN_V_SIZE, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_ARM, hinst, NULL));
 
-		for (ui i = 0; i < arms.size(); i++)
+		for (ui i = 0; i < game.GetPlayer().GetAmmo().size(); i++)
 		{
-			SendMessage(comboboxArms, CB_ADDSTRING, NULL, (LPARAM)arms[i].c_str());
+			SendMessage(wndws[wndws.size() - 1], CB_ADDSTRING, NULL, (LPARAM)game.GetPlayer().GetAmmo()[i]->GetName().c_str());
 
 			//SetWindowText(hWnd, arms[i].c_str());
 		}// for (ui i = 0; i < arms.size(); i++)
 
 		//SendMessage(comboboxArms, CB_SELECTSTRING, -1, (LPARAM)arms[0].c_str());
 
-		ComboBox_SetText(comboboxArms, "Choose arm");
+		ComboBox_SetText(wndws[wndws.size() - 1], "Choose arm");
 
-
-		comboboxDirection = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
+		wndws.push_back(CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
 			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT,
-			LIST_X, LIST_Y + LIST_Y * 2, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_DIRECT, hinst, NULL);
+			LIST_X, LIST_Y*3 + BTN_V_SIZE * 2, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_DIRECT, hinst, NULL));
 
-		for (ui i = 0; i < direction.size(); i++)
+		for (ui i = 0; i < game.GetPlayer().GetBlocks().size(); i++)
 		{
 			
-			SendMessage(comboboxDirection, CB_ADDSTRING, NULL, (LPARAM)direction[i].c_str());
+			SendMessage(wndws[wndws.size() - 1], CB_ADDSTRING, NULL, (LPARAM)game.GetPlayer().GetBlocks()[i]->GetName().c_str());
 
 		}// for (ui i = 0; i < arms.size(); i++)
 
-		ComboBox_SetText(comboboxDirection, "Choose level");
+		ComboBox_SetText(wndws[wndws.size() - 1], "Choose direction");
 
-		listboxInfo = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
+		wndws.push_back(CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[COMBOBOX], "",
+			WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT,
+			LIST_X, LIST_Y * 4 + BTN_V_SIZE * 3, BTN_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_COMBO_BLOCK, hinst, NULL));
+
+		for (ui i = 0; i < game.GetPlayer().GetBlocks().size(); i++)
+		{
+
+			SendMessage(wndws[wndws.size() - 1], CB_ADDSTRING, NULL, (LPARAM)game.GetPlayer().GetBlocks()[i]->GetName().c_str());
+
+		}// for (ui i = 0; i < arms.size(); i++)
+
+		ComboBox_SetText(wndws[wndws.size() - 1], "Choose block");
+
+		wndws.push_back(CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[LISTBOX], "",
 			WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_EXTENDEDSEL | LBS_SORT | LBS_NOTIFY,
-			BTN_H_SIZE + LIST_X * 2, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_LIST_BOX_INFO, hinst, NULL);
+			BTN_H_SIZE + LIST_X * 2 + 100, LIST_Y, LIST_H_SIZE, LIST_V_SIZE, hWnd, (HMENU)ID_LIST_BOX_INFO, hinst, NULL));
 
-		buttonHit = CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "HIT",
+		wndws.push_back(CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "HIT",
 			WS_CHILD | WS_VISIBLE,
-			LIST_X, LIST_Y * 2 + LIST_Y * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL);
+			LIST_X, LIST_Y * 5 + BTN_V_SIZE * 4, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_HIT, hinst, NULL));
+
+
+		wndws.push_back(CreateWindowEx(NULL, controlNames[STATIC], "Ammo",
+			WS_CHILD | WS_VISIBLE | SS_CENTER | SS_WORDELLIPSIS ,
+			LIST_X, LIST_Y + BTN_V_SIZE, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_STATIC_ARM, hinst, NULL));
+
+		wndws.push_back(CreateWindowEx(NULL, controlNames[STATIC], "Direction",
+			WS_CHILD | WS_VISIBLE | SS_CENTER | SS_WORDELLIPSIS,
+			LIST_X, LIST_Y * 2 + BTN_V_SIZE * 2, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_STATIC_DIRECT, hinst, NULL));
+
+		wndws.push_back(CreateWindowEx(NULL, controlNames[STATIC], "Block",
+			WS_CHILD | WS_VISIBLE | SS_CENTER | SS_WORDELLIPSIS,
+			LIST_X, LIST_Y * 3 + BTN_V_SIZE * 3, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_STATIC_BLOCK, hinst, NULL));
+
+		//TODO Add two edit boxes for health;
+
+		wndws.push_back(CreateWindowEx(WS_EX_CLIENTEDGE, controlNames[BUTTON], "START",
+			WS_CHILD | WS_VISIBLE,
+			LIST_X, LIST_Y, BTN_H_SIZE, BTN_V_SIZE, hWnd, (HMENU)ID_BTN_START, hinst, NULL));
+
+		EnableAll(wndws, FALSE);
 
 		break;
 
@@ -78,23 +120,83 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_BTN_HIT:
 			if (HIWORD(wParam) == BN_CLICKED)
 			{
-				try{
+				if (!game.IsOver())
+				{
+					switch (game.GetTurn())
+					{
+					case FIRST_PLAYER:
 
-				result = GetInfo(comboboxArms, comboboxDirection);
+						game.SetEnd(game.GetComputer().GetHealth());
 
-				}
-				catch (char* s){
+						game.ChangeTurn(COMPUTER);
 
-				MessageBox(hWnd, s, s, NULL);
+						break;
+					case COMPUTER:
 
-				break;
+						
+						hit = game.GetComputer().ChooseArm();
+
+						direct = game.GetComputer().ChooseDirect();
+						
+						try{
+							shield = GetPlayerShield(wndws[3]);
+						}
+						catch (char* s)
+						{
+							
+							MessageBox(hWnd, s, s, NULL);
+
+							break;
+						}
+
+						health = game.GetPlayer().GetHealth() -
+							game.GetComputer().CalculateDamage(hit, direct, shield);
+
+						game.GetPlayer().SetHealth(health);
+
+						//TODO Show hits, blocks, damage and set health
+						
+						game.SetEnd(game.GetPlayer().GetHealth());
+
+						game.ChangeTurn(FIRST_PLAYER);
+
+						break;
+
+					
+					}// switch (Game.GetTurn())
+
+					/*try{
+
+						result = GetInfo(comboboxArms, comboboxDirection);
+
+					}
+					catch (char* s){
+
+						MessageBox(hWnd, s, s, NULL);
+
+						break;
+					}
+
+					SendInfo(listboxInfo, result);*/
+				}// if (!Game.IsOver())
+				else
+				{
+				EnableAll(wndws,FALSE);
 				}
 				
-				SendInfo(listboxInfo, result);
 				
 				break;
 
 			}//switch (LOWORD(wParam)){
+
+		case ID_BTN_START:
+
+			if (HIWORD(wParam) == BN_CLICKED)
+			{
+				EnableAll(wndws, TRUE);
+
+			}// if (HIWORD(wParam) == BN_CLICKED)
+
 
 		}// case WM_COMMAND:
 
@@ -165,32 +267,57 @@ void SendInfo(const HWND &listboxInfo, const string &result)
 
 }//void SendInfo(const HWND &listboxInfo)
 
+int GetPlayerShield(const HWND &combobox)
+{
+	int pos = ComboBox_GetCurSel(combobox);
+
+	if (pos == CB_ERR)
+		{
+			throw "Choose block";
+		}// if (pos == CB_ERR)
+
+	return pos;
+
+}
+
 string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
 {
 	
 	string result = "Hit: ";
 
-	auto pos = ComboBox_GetCurSel(comboboxArms);
+	//auto pos = ComboBox_GetCurSel(comboboxArms);
 
-	if (pos == CB_ERR)
-	{
-		throw "Choose arm";
-	}// if (pos == CB_ERR)
+	//if (pos == CB_ERR)
+	//{
+	//	throw "Choose arm";
+	//}// if (pos == CB_ERR)
 
-	result += arms[pos];
+	//result += arms[pos];
 
-	result += " in: ";
+	//result += " in: ";
 
-	pos = ComboBox_GetCurSel(comboboxDirection);
+	//pos = ComboBox_GetCurSel(comboboxDirection);
 
-	if (pos == CB_ERR)
-	{
-		throw "Choose level";
-	}// if (pos == CB_ERR)
+	//if (pos == CB_ERR)
+	//{
+	//	throw "Choose level";
+	//}// if (pos == CB_ERR)
 
 
-	result += direction[pos];
+	////result += direction[pos];
 
 	return result;
 }// string GetInfo(const HWND &comboboxArms, const HWND &comboboxDirection)
+
+void EnableAll(vector<HWND> &wndws, const BOOL &enable)
+{
+	ui i;
+
+	for (i = 0; i < wndws.size()-1; i++)
+	{
+		EnableWindow(wndws[i], enable);
+	}//
+
+	EnableWindow(wndws[i], !enable);
+}
 
