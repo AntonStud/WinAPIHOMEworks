@@ -3,7 +3,7 @@
 
 Player::Player() :HEALTH(100), MINDAMAGE(1), HEALTHLIMIT(20), DAMAGETWO(2), DAMAGELIMIT(10)
 {
-	health = HEALTH;
+	Init();
 
 	arms.push_back(new Arms("Arm", MINDAMAGE));
 	arms.push_back(new Arms("Leg", DAMAGETWO));
@@ -84,3 +84,7 @@ vector<Blocks*> &Player::GetBlocks()
 	return this->blocks;
 }// vector<Blocks*> &Player::GetBlocks()
 //--------------------------------------------------------------------------
+void Player::Init()
+{
+	health = HEALTH;
+}// void Player::Init()

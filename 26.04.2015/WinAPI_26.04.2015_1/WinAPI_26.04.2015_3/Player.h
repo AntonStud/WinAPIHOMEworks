@@ -30,6 +30,8 @@ public:
 	Player();
 	~Player();
 
+	void Init();
+
 	int ChooseBlock();
 	int ChooseDirect();
 	int ChooseArm();

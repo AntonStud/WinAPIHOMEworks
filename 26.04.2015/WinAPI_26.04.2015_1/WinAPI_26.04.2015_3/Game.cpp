@@ -7,9 +7,7 @@ Game::Game()
 
 	computer = new Player;
 
-	turn = FIRST_PLAYER;
-
-	end = false;
+	Init();
 
 }
 //---------------------------------------------------------------
@@ -73,3 +71,15 @@ void Game::SetEnd(const int &health)
 
 }// void Game::SetEnd(const int &health)
 //---------------------------------------------------------------
+
+void Game::Init()
+{
+	turn = FIRST_PLAYER;
+
+	player->Init();
+
+	computer->Init();
+
+	end = false;
+
+}// void Game::Init()

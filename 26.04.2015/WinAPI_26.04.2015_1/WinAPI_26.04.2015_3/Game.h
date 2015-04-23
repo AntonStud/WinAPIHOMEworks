@@ -30,6 +30,8 @@ public:
 	Game();
 	~Game();
 
+	void Init();
+
 	void SetHistory(const string &history);
 
 	void ChangeTurn(const TURN &turn);
